@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+</head>
+<body>
+<h1 id="result"></h1>
+
+<script>
+// List of example Roblox datacenter IP ranges (simplified)
+const robloxIpRanges = [
+  { start: '23.235.33.0', end: '23.235.33.255' },
+  { start: '23.235.34.0', end: '23.235.34.255' }
+  // Add more ranges as needed
+];
+
+// Function to convert IP to a number
+function ipToNumber(ip) {
+  return ip.split('.').reduce((acc, octet) => (acc << 8) + parseInt(octet), 0);
+}
+
+// Check if IP is within range
+function isIpInRange(ip, range) {
+  const ipNum = ipToNumber(ip);
+  const startNum = ipToNumber(range.start);
+  const endNum = ipToNumber(range.end);
+  return ipNum >= startNum && ipNum <= endNum;
+}
+
+// Fetch client's IP address
+fetch('https://api.ipify.org?format=json')
+  .then(response => response.json())
+  .then(data => {
+    const clientIp = data.ip;
+    let isRobloxServer = false;
+
+    // Check if IP is in Roblox ranges
+    for (const range of robloxIpRanges) {
+      if (isIpInRange(clientIp, range)) {
+        isRobloxServer = true;
+        break;
+      }
+    }
+
+    // Display based on check
+    const resultElement = document.getElementById('result');
+    if (isRobloxServer) {
+      resultElement.innerText = '71946003356325';
+    } else {
+      resultElement.innerText = '4446576906';
+    }
+  })
+  .catch(error => {
+    document.getElementById('result').innerText = 'Error fetching IP';
+    console.error('Error:', error);
+  });
+</script>
+</body>
+</html>
